@@ -1,3 +1,4 @@
+import { API_component } from "./api.js"
 import { MENU_component } from "./burgetMenu.js"
 import { MAIN_PAGE_component } from "./mainPage.js"
 class Header{
@@ -42,9 +43,12 @@ class Header{
         MENU_component.openMenu()
     }
     addSearchListener(form){
-        form.addEventListener('submit',()=>{
+        form.addEventListener('submit', async()=>{
             event.preventDefault()
-            console.log(form.search.value)
+            const result = await API_component.getSearch(form.search.value)
+            MAIN_PAGE_component.renderMainPage('search', result, form.search.value)
+            form.reset()
+            form.search.blur()
         })
     }
 }

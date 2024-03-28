@@ -15,13 +15,28 @@ class API{
         .catch(err => console.error(err));
     }
     getVideoPreview(type, id){
-        return fetch(`${this.BASE_URL}${type}/${id}/videos?language=${this.language}`, this.options)
+        try{
+            return fetch(`${this.BASE_URL}${type}/${id}/videos?language=${this.language}`, this.options)
+        .then(response => {
+            if(response.ok){
+                return response.json()
+            }
+        })
+        .then(response => response)
+        .catch(err => console.error(err));
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+    getData(mediaType, type, page = 1){
+        return fetch(`https://api.themoviedb.org/3/${mediaType}/${type}?language=${this.language}&page=${page}`, this.options)
         .then(response => response.json())
         .then(response => response)
         .catch(err => console.error(err));
     }
-    getData(mediaType, type, page = 1){
-        return fetch(`https://api.themoviedb.org/3/${mediaType}/${type}?language=${this.language}&page=${page}`, this.options)
+    getSearch(searchItem, page = 1){
+        return fetch(`https://api.themoviedb.org/3/search/multi?query=${searchItem}&include_adult=false&language=${this.language}&page=${page}`, this.options)
         .then(response => response.json())
         .then(response => response)
         .catch(err => console.error(err));

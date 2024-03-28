@@ -7,7 +7,7 @@ class Main_Page{
     constructor(root){
         this.ROOT_element = root
     }
-    async renderMainPage(param = 'trends'){
+    async renderMainPage(param = 'trends', DATA_search_array, searchTitle){
         document.querySelector(this.ROOT_element).innerHTML = ''
         let setTitle = null
 
@@ -43,6 +43,11 @@ class Main_Page{
                 setTitle = this.renderTitle('TOP сериалы')
             break;
             case 'search':
+                data = DATA_search_array
+                    setTitle = this.renderTitle(`Результаты поиска по запросу: ${searchTitle}`)
+                if(data.results.length === 0){
+                    setTitle = this.renderTitle(`Ничего не найдено по запросу: ${searchTitle}`)
+                }
             break;
         }
        
@@ -98,30 +103,43 @@ class Main_Page{
     renderContentList(data){
         const list = document.createElement('ol')
         list.className = 'other-films__list'
-
+       
         Promise.allSettled(data.map(async(item)=>{
-            const videoPreview = await API_component.getVideoPreview(item.media_type ? item.media_type : this.mediaType, item.id)            
+            let videoPreview = null
+            if(item.media_type !== 'person'){
+                videoPreview = await API_component.getVideoPreview(item.media_type ? item.media_type : this.mediaType, item.id)            
+            }
+
             const li = document.createElement('li')
             li.className = 'other-films__item'
 
             const link = document.createElement('a')
             link.className = 'other-films__link'
             link.setAttribute('target','_blank')
-            link.append(await this.loadImg(item.poster_path))
-            if(videoPreview.results[0]){
+            if(item.media_type !== 'person'){
+                link.append(await this.loadImg(item.poster_path))
+                link.setAttribute('data-rating',`${item.vote_average.toFixed(1)}`)
+            }else{
+                link.append(await this.loadImg(item.profile_path, true))
+            }
+            if(videoPreview !== null && videoPreview.results[0]){
                 link.setAttribute('href', `https://youtu.be/${videoPreview.results[0].key}`)
             }
-            link.setAttribute('data-rating',`${item.vote_average.toFixed(1)}`)
 
             li.append(link)
 
             return li
         })).then(listOfContent=>{
             listOfContent.forEach((el)=>{
-                list.append(el.value)
+                if(el.status === "fulfilled"){
+  
+                    list.append(el.value)
+     
+                }
+                
             })
         })
-        
+      
         return list
     }
     loadImg(poster){
