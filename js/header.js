@@ -50,6 +50,7 @@ class Header {
       MAIN_PAGE_component.renderMainPage("search", result, form.search.value);
       form.reset();
       form.search.blur();
+      window.scroll(0,0)
     });
   }
   scrollHeaderOnPage() {
@@ -61,21 +62,7 @@ class Header {
         .height;
     const btnScrollToTop = document.querySelector(".up-top");
     btnScrollToTop.addEventListener("click", () => {
-      const param = window.scrollY - 200;
-      scrolling();
-      function scrolling() {
-        let timerID = setTimeout(() => {
-          if (window.scrollY <= param) {
-            window.scroll(0, 0);
-            clearTimeout(timerID);
-
-            return;
-          }
-          window.scroll(0, window.scrollY - 20);
-          clearTimeout(timerID);
-          scrolling();
-        }, 20);
-      }
+      window.scroll(0,0)
     });
 
     let scroll = 0;
